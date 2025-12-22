@@ -9,6 +9,7 @@ from django.views.generic import (
     DeleteView,
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth import logout
 from django.shortcuts import redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.conf import settings
@@ -32,7 +33,7 @@ from .forms import (
     RegistrationForm,
 )
 
-logger = logging.getLogger(__name__) 
+logger = logging.getLogger(__name__)
 
 
 def index(request):

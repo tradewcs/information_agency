@@ -57,7 +57,11 @@ class ViewsTests(TestCase):
 
     def test_create_invite_requires_editor(self):
         self.client.login(username="other", password="pass1234")
-        resp = self.client.post(reverse("core:newspaper_create_invite", args=[self.newspaper.pk]), data={"email": self.target.email})
+        resp = self.client.post(
+            reverse("core:newspaper_create_invite",
+                    args=[self.newspaper.pk]),
+            data={"email": self.target.email}
+        )
         self.assertEqual(resp.status_code, 403)
 
     def test_create_invite_for_registered_user(self):
