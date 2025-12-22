@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.urls import reverse
 
 
 class Publisher(AbstractUser):
@@ -83,3 +84,6 @@ class NewsPaper(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse("core:newspaper_detail", args=[self.pk])

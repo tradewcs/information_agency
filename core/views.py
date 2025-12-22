@@ -190,7 +190,7 @@ def create_newspaper_invite(request, pk):
     newspaper = get_object_or_404(NewsPaper, pk=pk)
 
     if not request.user.is_authenticated:
-        return redirect(f"{reverse('core:login')}?next={request.path}")
+        return redirect(f"{reverse("core:login")}?next={request.path}")
 
     if (
         request.user not in newspaper.publishers.all()
