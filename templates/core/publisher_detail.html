@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ publisher.username }}</h1>
+<p>{{ publisher.first_name }} {{ publisher.last_name }}</p>
+<p>{{ publisher.email }}</p>
+<p>Years experience: {{ publisher.years_of_experience }}</p>
+
+{% if can_edit %}
+  <p><a class="btn btn-primary" href="{% url 'core:publisher_edit' publisher.pk %}">Edit profile</a></p>
+{% endif %}
+
+{% if publisher.newspapers.exists %}
+  <p><a class="btn btn-outline-secondary" href="{% url 'core:publisher_articles' publisher.pk %}">View articles</a></p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Articles by {{ publisher.username }}</h1>
+  <a class="btn btn-secondary" href="{% url 'core:publisher_detail' publisher.pk %}">Back to profile</a>
+</div>
+
+<div id="publisher-articles">
+  {% include "core/partials/_newspaper_list.html" with newspapers=newspapers %}
+</div>
+{% endblock %}

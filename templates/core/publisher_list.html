@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Publishers</h1>
+  <a class="btn btn-primary" href="{% url 'core:publishers_create' %}">Create new</a>
+</div>
+
+<div class="mb-3">
+  <input id="publishers-search-input" type="search" class="form-control" placeholder="Search publishers...">
+</div>
+
+<div id="publishers-search-results">
+  {% include "core/partials/_publisher_list.html" with publishers=publishers %}
+</div>
+
+{% block extra_js %}
+  {% url 'core:search_publishers' as search_url %}
+  {% include 'core/partials/_search_script.html' with search_url=search_url input_id='publishers-search-input' results_id='publishers-search-results' %}
+{% endblock %}
+{% endblock %}

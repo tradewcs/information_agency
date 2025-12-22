@@ -1,0 +1,10 @@
+django==6.0
+flake8==7.3.0
+load_dotenv
+flake8-quotes
+flake8-variables-names
+pep8-naming
+django-debug-toolbar
+django-crispy-forms
+crispy-bootstrap5
+python-dotenv

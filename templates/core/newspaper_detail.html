@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-2">
+  <h1 class="mb-0">{{ newspaper.title }}</h1>
+  <div class="d-flex gap-2 align-items-start">
+    {% if can_invite %}
+      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#inviteModal-{{ newspaper.pk }}">Invite publisher</button>
+    {% endif %}
+    {% if can_edit %}
+      <a class="btn btn-outline-secondary" href="{% url 'core:newspaper_edit' newspaper.pk %}">Edit</a>
+    {% endif %}
+    {% if can_delete %}
+      <!-- Delete confirmation modal trigger -->
+      <button class="btn btn-danger ms-1" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ newspaper.pk }}">Delete</button>
+
+      <!-- Delete confirmation modal -->
+      <div class="modal fade" id="deleteModal-{{ newspaper.pk }}" tabindex="-1" aria-labelledby="deleteModalLabel-{{ newspaper.pk }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteModalLabel-{{ newspaper.pk }}">Delete "{{ newspaper.title }}"</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to delete <strong>{{ newspaper.title }}</strong>? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+              <form method="post" action="{% url 'core:newspaper_delete' newspaper.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button class="btn btn-danger" type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+<div class="mb-3 text-muted">Published: {{ newspaper.published_date|date:"Y-m-d H:i" }}</div>
+<div>{{ newspaper.content|safe }}</div>
+<p>Topics: {% for t in newspaper.topic.all %}{{ t.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+<p>Publishers: {% for p in newspaper.publishers.all %}<a href="{% url 'core:publisher_detail' p.pk %}">{{ p.username }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+
+<!-- Invite modal -->
+<div class="modal fade" id="inviteModal-{{ newspaper.pk }}" tabindex="-1" aria-labelledby="inviteModalLabel-{{ newspaper.pk }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="inviteModalLabel-{{ newspaper.pk }}">Manage invites for {{ newspaper.title }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h6>Create invite</h6>
+        <form id="invite-form-{{ newspaper.pk }}" class="js-newspaper-invite-form" method="post" action="{% url 'core:newspaper_create_invite' newspaper.pk %}">
+          {% csrf_token %}
+          <div class="input-group mb-3">
+            <input id="invite-email-{{ newspaper.pk }}" name="email" class="form-control" placeholder="Email to invite (optional)">
+            <button class="btn btn-primary" type="submit">Create invite</button>
+          </div>
+          <div id="invite-error-{{ newspaper.pk }}" class="text-danger small mt-1" style="display:none"></div>
+          <div class="form-text mb-3">Leave email empty to make a generic invite link.</div>
+        </form>
+        <hr>
+        <h6>Pending invites</h6>
+        <div id="pending-invites-container-{{ newspaper.pk }}">
+          {% include 'invites/_pending_invites.html' with pending_invites_info=pending_invites_info %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+(function(){
+  function getCookie(name){
+    let v = null;
+    document.cookie.split(';').forEach(function(c){
+      const t = c.trim().split('=');
+      if(t[0] === name) v = decodeURIComponent(t[1]);
+    });
+    return v;
+  }
+
+  const form = document.getElementById('invite-form-{{ newspaper.pk }}');
+  if (!form) return;
+  // Prevent attaching the handler more than once (defensive)
+  if (form.dataset.inviteBound) return;
+  form.dataset.inviteBound = '1';
+
+  const errorEl = document.getElementById('invite-error-{{ newspaper.pk }}');
+  const pendingContainer = document.getElementById('pending-invites-container-{{ newspaper.pk }}');
+
+  form.addEventListener('submit', function(e){
+    console.debug('invite submit for newspaper {{ newspaper.pk }}', new Date().toISOString());
+    e.preventDefault();
+    const fd = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
+
+    fetch(form.action, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: fd,
+    }).then(function(res){
+      if (!res.ok) return res.json().then(function(data){ throw data; });
+      return res.json();
+    }).then(function(data){
+      if (data.success) {
+        if (pendingContainer && data.pending_html) {
+          pendingContainer.innerHTML = data.pending_html;
+        }
+        form.reset();
+        if (errorEl) { errorEl.style.display = 'none'; errorEl.textContent = ''; }
+      } else {
+        if (errorEl) { errorEl.style.display = 'block'; errorEl.textContent = data.error || 'An error occurred'; }
+      }
+    }).catch(function(err){
+      const msg = err && err.error ? err.error : 'Network error';
+      if (errorEl) { errorEl.style.display = 'block'; errorEl.textContent = msg; }
+    }).finally(function(){
+      if (submitBtn) submitBtn.disabled = false;
+    });
+  });
+})();
+</script>
+{% endblock %}
+{% endblock %}

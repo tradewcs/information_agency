@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Newspapers</h1>
+  <a class="btn btn-primary" href="{% url 'core:newspapers_create' %}">Create new</a>
+</div>
+
+<div class="mb-3">
+  <input id="newspapers-search-input" type="search" class="form-control" placeholder="Search newspapers...">
+</div>
+
+<div id="newspapers-search-results">
+  {% include "core/partials/_newspaper_list.html" with newspapers=newspapers %}
+</div>
+
+{% block extra_js %}
+  {% url 'core:search_newspapers' as search_url %}
+  {% include 'core/partials/_search_script.html' with search_url=search_url input_id='newspapers-search-input' results_id='newspapers-search-results' %}
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Topics</h1>
+  <a class="btn btn-primary" href="{% url 'core:topics_create' %}">Create new</a>
+</div>
+
+<div class="mb-3">
+  <input id="topics-search-input" type="search" class="form-control" placeholder="Search topics...">
+</div>
+
+<div id="topics-search-results">
+  {% include "core/partials/_topic_list.html" with topics=topics %}
+</div>
+
+{% block extra_js %}
+  {% url 'core:search_topics' as search_url %}
+  {% include 'core/partials/_search_script.html' with search_url=search_url input_id='topics-search-input' results_id='topics-search-results' %}
+{% endblock %}
+{% endblock %}

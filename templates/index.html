@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron py-5 mb-4 bg-light rounded-3">
+  <div class="container">
+    <h1 class="display-5">Information Agency</h1>
+    <p class="lead">Browse articles, topics and publishers — explore the latest stories.</p>
+    <p>
+      <a class="btn btn-primary btn-lg" href="{% url 'core:newspapers_list' %}">Browse Newspapers</a>
+      <a class="btn btn-outline-secondary btn-lg" href="{% url 'core:publishers_list' %}">Publishers</a>
+    </p>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title">Publishers</h5>
+        <p class="card-text display-6">{{ counts.publishers }}</p>
+        <a href="{% url 'core:publishers_list' %}" class="btn btn-sm btn-primary">View</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title">Topics</h5>
+        <p class="card-text display-6">{{ counts.topics }}</p>
+        <a href="{% url 'core:topics_list' %}" class="btn btn-sm btn-primary">View</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title">Newspapers</h5>
+        <p class="card-text display-6">{{ counts.newspapers }}</p>
+        <a href="{% url 'core:newspapers_list' %}" class="btn btn-sm btn-primary">View</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>Latest newspapers</h3>
+<div class="row">
+  {% for n in latest_newspapers %}
+  <div class="col-md-4 mb-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">{{ n.title }}</h5>
+        <p class="card-text text-truncate">{{ n.content|striptags|truncatechars:200 }}</p>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'core:newspaper_detail' n.pk %}">Read</a>
+      </div>
+      <div class="card-footer text-muted small">Published {{ n.published_date|date:'Y-m-d' }}</div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">No newspapers yet.</div>
+  {% endfor %}
+</div>
+{% endblock %}

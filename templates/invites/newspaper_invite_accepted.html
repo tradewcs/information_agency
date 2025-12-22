@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body text-center">
+        <h3>Invite accepted</h3>
+        <p>You are now a publisher on <strong>{{ newspaper.title }}</strong>.</p>
+        <a class="btn btn-primary" href="{% url 'core:newspaper_detail' newspaper.pk %}">View newspaper</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

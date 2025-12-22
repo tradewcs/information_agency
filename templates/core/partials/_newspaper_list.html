@@ -1,0 +1,24 @@
+{% if newspapers.exists %}
+<div class="list-group">
+  {% for n in newspapers %}
+  <div class="list-group-item">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1"><a href="{% url 'core:newspaper_detail' n.pk %}">{{ n.title }}</a></h5>
+      <small class="text-muted">{{ n.published_date|date:"Y-m-d" }}</small>
+    </div>
+    <div class="excerpt">{{ n.content|striptags|truncatechars:200 }}</div>
+    <div class="mt-2">
+      <small class="text-muted">
+        By: 
+        {% for p in n.publishers.all %}
+          <a href="{% url 'core:publisher_detail' p.pk %}">{{ p.username }}</a>
+          {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </small>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="no-results">No newspapers found.</p>
+{% endif %}
