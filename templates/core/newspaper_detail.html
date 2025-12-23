@@ -89,7 +89,7 @@
 
   const form = document.getElementById('invite-form-{{ newspaper.pk }}');
   if (!form) return;
-  // Prevent attaching the handler more than once (defensive)
+  // Prevent attaching the handler more than once
   if (form.dataset.inviteBound) return;
   form.dataset.inviteBound = '1';
 
