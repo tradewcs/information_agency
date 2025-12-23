@@ -2,7 +2,7 @@
 
 set -o errexit
 
-export DJANGO_SETTINGS_MODULE=my_project.settings.prod
+export DJANGO_SETTINGS_MODULE=information_agency.settings.prod
 
 pip install -r requirements.txt
 python manage.py collectstatic --no-input
