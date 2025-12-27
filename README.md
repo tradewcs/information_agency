@@ -9,11 +9,11 @@ focused on editor workflows, invites, and simple content management. ✅
 
 ## 🚀 Quick Start
 
-1. Clone the repo and create a virtual environment (Windows example):
+1. Clone the repo and create a virtual environment:
 
-   ```powershell
+   ```bash
    python -m venv .venv
-   .\.venv\Scripts\Activate.ps1    # PowerShell
+   source .venv/bin/activate
    pip install -r requirements.txt
    ```
 
@@ -77,34 +77,3 @@ your environment. Typical vars:
 
 ---
 
-## 🐞 Troubleshooting — Invite duplicates
-
-If you see duplicate invites created after a single click, check these places:
-
-- Server-side: `core/views.py` — `create_newspaper_invite` (transaction, select_for_update,
-  duplicate checks, and logging)
-- Client-side: `templates/core/newspaper_detail.html` — modal submit handler
-  (guard against double-binding and disabled submit during AJAX)
-- Tests: `core/tests.py` — view tests that cover invite creation and
-  duplicate-rejection behavior
-
-Enable server logs and open your browser DevTools (Network & Console) to see
-whether two POST requests are being sent, or whether a race condition occurs
-server-side.
-
----
-
-## 🤝 Contributing
-
-- Fork, create a feature branch, add tests for new behavior, and open a PR.
-- Keep lines wrapped to 79–88 characters and add docstrings for public views.
-
----
-
-## 📄 License
-
-MIT (add LICENSE file if needed)
-
----
-
-Happy hacking! ✨
