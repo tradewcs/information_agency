@@ -4,7 +4,7 @@ import dj_database_url
 from .base import *
 
 
-DEBUG = False
+DEBUG = True
 
 RENDER_DOMAIN = os.environ.get("RENDER_DOMAIN")
 
