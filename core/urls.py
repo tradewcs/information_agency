@@ -108,11 +108,6 @@ urlpatterns = [
         name="register",
     ),
     path(
-        "accounts/verify/<uuid:token>/",
-        views.verify_email,
-        name="verify_email",
-    ),
-    path(
         "accounts/logout/",
         views.logout_view,
         name="logout",

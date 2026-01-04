@@ -7,11 +7,12 @@
       <div class="card-body">
         <h3>Invite created for <em>{{ newspaper.title }}</em></h3>
         {% if email %}
-          <p>An invite was emailed to <strong>{{ email }}</strong></p>
+          <p>An invite was created for <strong>{{ email }}</strong></p>
         {% else %}
           <p>Generic invite link:</p>
-          {% include 'invites/_invite_link.html' %}
         {% endif %}
+        <p>Invite link:</p>
+        {% include 'invites/_invite_link.html' %}
       </div>
     </div>
   </div>

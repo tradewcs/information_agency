@@ -1,5 +1,4 @@
 import uuid
-
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
@@ -8,7 +7,6 @@ from django.urls import reverse
 class Publisher(AbstractUser):
     password = models.CharField(max_length=128)
     years_of_experience = models.PositiveIntegerField(default=0)
-    is_email_verified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
@@ -19,23 +17,6 @@ class Topik(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class EmailVerificationToken(models.Model):
-    user = models.ForeignKey(
-        Publisher,
-        on_delete=models.CASCADE,
-        related_name="email_tokens",
-    )
-    token = models.UUIDField(
-        default=uuid.uuid4,
-        editable=False,
-        unique=True,
-    )
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Token for {self.user.username}: {self.token}"
 
 
 class ArticleInvite(models.Model):

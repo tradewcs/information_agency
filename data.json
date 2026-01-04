@@ -14,7 +14,6 @@
       "first_name": "Mike",
       "last_name": "P",
       "years_of_experience": 2,
-      "is_email_verified": true,
       "groups": [],
       "user_permissions": []
     }
@@ -34,7 +33,6 @@
       "first_name": "Sarah",
       "last_name": "Chen",
       "years_of_experience": 7,
-      "is_email_verified": true,
       "groups": [],
       "user_permissions": []
     }
@@ -54,7 +52,6 @@
       "first_name": "Robert",
       "last_name": "Wilson",
       "years_of_experience": 12,
-      "is_email_verified": true,
       "groups": [],
       "user_permissions": []
     }
@@ -74,7 +71,6 @@
       "first_name": "Maria",
       "last_name": "Garcia",
       "years_of_experience": 15,
-      "is_email_verified": true,
       "groups": [],
       "user_permissions": []
     }

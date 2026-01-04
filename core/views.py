@@ -11,8 +11,6 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import logout
 from django.shortcuts import redirect, get_object_or_404
-from django.core.mail import send_mail
-from django.conf import settings
 from django.http import HttpResponseForbidden, JsonResponse
 from django.contrib import messages
 from django.template.loader import render_to_string
@@ -23,7 +21,6 @@ from .models import (
     Publisher,
     Topik,
     NewsPaper,
-    EmailVerificationToken,
     ArticleInvite,
 )
 from .forms import (
@@ -280,17 +277,12 @@ def create_newspaper_invite(request, pk):
                     args=[str(invite.token)],
                 )
             )
+
             if email:
-                send_mail(
-                    subject=(
-                        f"Invite to collaborate on '{newspaper.title}'"
-                    ),
-                    message=(
-                        f"Accept invitation: {invite_url}"
-                    ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[email],
-                    fail_silently=True,
+                logger.info(
+                    "Invite created for email %s. Invite URL: %s",
+                    email,
+                    invite_url,
                 )
 
         if is_ajax:
@@ -450,53 +442,16 @@ def search_newspapers(request):
 
 
 def register(request):
-    """Register a new publisher and send email verification link."""
+    """Register a new publisher (no email verification)."""
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            token = EmailVerificationToken.objects.create(user=user)
-            verify_url = request.build_absolute_uri(
-                reverse("core:verify_email", args=[str(token.token)])
-            )
-
-            print(f"Verification URL (send via email): {verify_url}")
-            send_mail(
-                subject="Verify your email",
-                message=(
-                    f"Please verify your email by visiting: {verify_url}"
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=True,
-            )
-
-            return render(
-                request,
-                "registration/verification_sent.html",
-                {"email": user.email},
-            )
+            messages.success(request, "Registration successful. You can now log in.")
+            return redirect("core:login")
     else:
         form = RegistrationForm()
     return render(request, "registration/register.html", {"form": form})
-
-
-def verify_email(request, token):
-    """Verify an email using a token and activate the user."""
-    obj = get_object_or_404(EmailVerificationToken, token=token)
-
-    user = obj.user
-    user.is_email_verified = True
-    user.is_active = True
-
-    user.save()
-    obj.delete()
-
-    return render(
-        request,
-        "registration/verification_success.html",
-        {"user": user},
-    )
 
 
 def logout_view(request):

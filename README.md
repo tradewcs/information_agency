@@ -36,9 +36,9 @@ focused on editor workflows, invites, and simple content management. ✅
 
 ## ✨ Features
 
-- **Publishers** (custom user model) with registration & email verification
+- **Publishers** (custom user model) with registration
 - **Topics** and **Newspapers** with a Summernote rich-text editor
-- **Invite-to-newspaper** workflow (token-based invites + email)
+- **Invite-to-newspaper** workflow (token-based invites)
 - Inline AJAX invite modal with pending-invites partial
 - Access controls: editors vs. read-only users
 - Tests and basic linting (pytest / flake8)
