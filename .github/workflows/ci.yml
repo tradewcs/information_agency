@@ -11,7 +11,7 @@ jobs:
     name: Test & Lint
     runs-on: ubuntu-latest
     env:
-      DJANGO_SETTINGS_MODULE: information_agency.settings.prod
+      DJANGO_SETTINGS_MODULE: information_agency.settings.dev
       SECRET_KEY: test-secret
     strategy:
       matrix:

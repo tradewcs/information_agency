@@ -11,7 +11,7 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import logout
 from django.shortcuts import redirect, get_object_or_404
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse, HttpRequest
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.db import transaction
@@ -33,7 +33,7 @@ from .forms import (
 logger = logging.getLogger(__name__)
 
 
-def index(request):
+def index(request: HttpRequest) -> render:
     """Simple homepage with counts and recent newspapers."""
     counts = {
         "publishers": Publisher.objects.count(),
@@ -69,7 +69,7 @@ class PublisherDetailView(DetailView):
     template_name = "core/publisher_detail.html"
     context_object_name = "publisher"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         context["can_edit"] = (
@@ -85,12 +85,12 @@ class PublisherUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = "core/publisher_form.html"
     success_url = reverse_lazy("core:publishers_list")
 
-    def test_func(self):
+    def test_func(self) -> bool:
         obj = self.get_object()
         return self.request.user == obj or self.request.user.is_superuser
 
 
-def publisher_articles(request, pk):
+def publisher_articles(request: HttpRequest, pk: int) -> render:
     """Show a simple list of newspapers authored by a publisher."""
     publisher = get_object_or_404(Publisher, pk=pk)
     newspapers = NewsPaper.objects.filter(
@@ -140,7 +140,7 @@ class NewsPaperCreateView(LoginRequiredMixin, CreateView):
     template_name = "core/newspaper_form.html"
     success_url = reverse_lazy("core:newspapers_list")
 
-    def form_valid(self, form):
+    def form_valid(self, form: NewsPaperForm) -> render:
         response = super().form_valid(form)
         self.object.publishers.add(self.request.user)
         return response
@@ -152,7 +152,7 @@ class NewsPaperDetailView(DetailView):
     template_name = "core/newspaper_detail.html"
     context_object_name = "newspaper"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         newspaper = self.get_object()
         user = self.request.user
@@ -178,7 +178,7 @@ class NewsPaperDetailView(DetailView):
         return context
 
 
-def create_newspaper_invite(request, pk):
+def create_newspaper_invite(request: HttpRequest, pk: int) -> render:
     """Create an invite for a newspaper.
 
     Support AJAX; non-AJAX requests redirect back to the newspaper detail
@@ -326,7 +326,7 @@ def create_newspaper_invite(request, pk):
     return redirect(newspaper.get_absolute_url())
 
 
-def accept_newspaper_invite(request, token):
+def accept_newspaper_invite(request: HttpRequest, token: str) -> render:
     """Accept an invite identified by its token and add the user as a
     publisher for the newspaper.
     """
@@ -356,7 +356,7 @@ class NewsPaperUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = "core/newspaper_form.html"
     success_url = reverse_lazy("core:newspapers_list")
 
-    def test_func(self):
+    def test_func(self) -> bool:
         newspaper = self.get_object()
         return (
             self.request.user in newspaper.publishers.all()
@@ -370,7 +370,7 @@ class NewsPaperDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = "core/newspaper_confirm_delete.html"
     success_url = reverse_lazy("core:newspapers_list")
 
-    def test_func(self):
+    def test_func(self) -> bool:
         newspaper = self.get_object()
         return (
             self.request.user in newspaper.publishers.all()
@@ -378,7 +378,7 @@ class NewsPaperDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         )
 
 
-def search_publishers(request):
+def search_publishers(request: HttpRequest) -> render:
     """Return a partial HTML list of publishers matching the query.
 
     GET param: `q` (search query).
@@ -401,7 +401,7 @@ def search_publishers(request):
     )
 
 
-def search_topics(request):
+def search_topics(request: HttpRequest) -> render:
     """Return a partial HTML list of topics matching the query.
 
     GET param: `q` (search query).
@@ -419,7 +419,7 @@ def search_topics(request):
     )
 
 
-def search_newspapers(request):
+def search_newspapers(request: HttpRequest) -> render:
     """Return a partial HTML list of newspapers matching the query.
 
     GET param: `q` (search query).
@@ -441,12 +441,12 @@ def search_newspapers(request):
     )
 
 
-def register(request):
+def register(request: HttpRequest) -> render:
     """Register a new publisher (no email verification)."""
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            form.save()
             messages.success(request, "Registration successful. You can now log in.")
             return redirect("core:login")
     else:
@@ -454,7 +454,7 @@ def register(request):
     return render(request, "registration/register.html", {"form": form})
 
 
-def logout_view(request):
+def logout_view(request: HttpRequest) -> render:
     """Confirmation (GET) and POST logout view.
 
     GET: show confirmation page asking the user to confirm logout.

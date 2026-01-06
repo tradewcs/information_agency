@@ -12,14 +12,14 @@ class Publisher(AbstractUser):
         validators=[MaxValueValidator(80)],
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.username
 
 
 class Topik(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -43,7 +43,7 @@ class ArticleInvite(models.Model):
     used = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f"ArticleInvite {self.token} for {self.newspaper.title} "
             f"by {self.created_by.username} -> {self.email or 'any'}"
@@ -63,8 +63,8 @@ class NewsPaper(models.Model):
         related_name="newspapers"
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse("core:newspaper_detail", args=[self.pk])
