@@ -1,22 +1,25 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 
-from .models import Publisher, NewsPaper, ArticleInvite
+from core.models import NewsPaper, ArticleInvite
+
+User = get_user_model()
 
 
 class ViewsTests(TestCase):
     def setUp(self) -> None:
-        self.editor = Publisher.objects.create_user(
+        self.editor = User.objects.create_user(
             username="editor",
             email="ed@example.com",
             password="pass1234",
         )
-        self.other = Publisher.objects.create_user(
+        self.other = User.objects.create_user(
             username="other",
             email="other@example.com",
             password="pass1234",
         )
-        self.target = Publisher.objects.create_user(
+        self.target = User.objects.create_user(
             username="target",
             email="target@example.com",
             password="pass1234",
@@ -53,7 +56,7 @@ class ViewsTests(TestCase):
             data={},
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertIn(reverse("core:login"), resp.url)
+        self.assertIn(reverse("accounts:login"), resp.url)
 
     def test_create_invite_requires_editor(self) -> None:
         self.client.login(username="other", password="pass1234")

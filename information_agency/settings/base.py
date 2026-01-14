@@ -42,9 +42,10 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "core",
+    "accounts",
 ]
 
-AUTH_USER_MODEL = "core.Publisher"
+AUTH_USER_MODEL = "accounts.Publisher"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

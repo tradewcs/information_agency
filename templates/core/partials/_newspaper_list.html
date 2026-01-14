@@ -11,7 +11,7 @@
       <small class="text-muted">
         By: 
         {% for p in n.publishers.all %}
-          <a href="{% url 'core:publisher_detail' p.pk %}">{{ p.username }}</a>
+          <a href="{% url 'accounts:publisher_detail' p.pk %}">{{ p.username }}</a>
           {% if not forloop.last %}, {% endif %}
         {% endfor %}
       </small>

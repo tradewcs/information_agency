@@ -12,11 +12,11 @@
   <tbody>
     {% for p in publishers %}
     <tr>
-      <td><a href="{% url 'core:publisher_detail' p.pk %}">{{ p.username }}</a></td>
+      <td><a href="{% url 'accounts:publisher_detail' p.pk %}">{{ p.username }}</a></td>
       <td>{{ p.first_name }} {{ p.last_name }}</td>
       <td>{{ p.email }}</td>
       <td>{{ p.years_of_experience }}</td>
-      <td><a href="{% url 'core:publisher_articles' p.pk %}">{{ p.newspapers.count }}</a></td>
+      <td><a href="{% url 'accounts:publisher_articles' p.pk %}">{{ p.newspapers.count }}</a></td>
     </tr>
     {% endfor %}
   </tbody>

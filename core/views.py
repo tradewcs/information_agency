@@ -7,10 +7,12 @@ from django.views.generic import (
     DetailView,
     UpdateView,
     DeleteView,
+    TemplateView,
+    View,
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth import logout
 from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth import get_user_model
 from django.http import HttpResponseForbidden, JsonResponse, HttpRequest
 from django.contrib import messages
 from django.template.loader import render_to_string
@@ -18,89 +20,33 @@ from django.db import transaction
 import logging
 
 from .models import (
-    Publisher,
     Topik,
     NewsPaper,
     ArticleInvite,
 )
 from .forms import (
-    PublisherForm,
     TopikForm,
     NewsPaperForm,
-    RegistrationForm,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def index(request: HttpRequest) -> render:
-    """Simple homepage with counts and recent newspapers."""
-    counts = {
-        "publishers": Publisher.objects.count(),
-        "topics": Topik.objects.count(),
-        "newspapers": NewsPaper.objects.count(),
-    }
-    latest_newspapers = NewsPaper.objects.order_by("-published_date")[:5]
-    return render(
-        request,
-        "index.html",
-        {"counts": counts, "latest_newspapers": latest_newspapers},
-    )
+User = get_user_model()
 
 
-class PublisherListView(ListView):
-    """List all publishers."""
-    model = Publisher
-    template_name = "core/publisher_list.html"
-    context_object_name = "publishers"
+class IndexView(TemplateView):
+    template_name = "index.html"
 
-
-class PublisherCreateView(CreateView):
-    """Create a new publisher account."""
-    model = Publisher
-    form_class = PublisherForm
-    template_name = "core/publisher_form.html"
-    success_url = reverse_lazy("core:publishers_list")
-
-
-class PublisherDetailView(DetailView):
-    """Show details for a publisher."""
-    model = Publisher
-    template_name = "core/publisher_detail.html"
-    context_object_name = "publisher"
-
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = self.get_object()
-        context["can_edit"] = (
-            self.request.user == obj or self.request.user.is_superuser
-        )
+        context["counts"] = {
+            "publishers": User.objects.count(),
+            "topics": Topik.objects.count(),
+            "newspapers": NewsPaper.objects.count(),
+        }
+        context["latest_newspapers"] = NewsPaper.objects.order_by("-published_date")[:5]
         return context
-
-
-class PublisherUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    """Update a publisher's profile (self or superuser)."""
-    model = Publisher
-    form_class = PublisherForm
-    template_name = "core/publisher_form.html"
-    success_url = reverse_lazy("core:publishers_list")
-
-    def test_func(self) -> bool:
-        obj = self.get_object()
-        return self.request.user == obj or self.request.user.is_superuser
-
-
-def publisher_articles(request: HttpRequest, pk: int) -> render:
-    """Show a simple list of newspapers authored by a publisher."""
-    publisher = get_object_or_404(Publisher, pk=pk)
-    newspapers = NewsPaper.objects.filter(
-        publishers=publisher
-    ).order_by("-published_date")
-    return render(
-        request,
-        "core/publisher_articles.html",
-        {"publisher": publisher, "newspapers": newspapers},
-    )
 
 
 class TopikListView(ListView):
@@ -178,30 +124,30 @@ class NewsPaperDetailView(DetailView):
         return context
 
 
-def create_newspaper_invite(request: HttpRequest, pk: int) -> render:
+class CreateNewspaperInviteView(View):
     """Create an invite for a newspaper.
 
     Support AJAX; non-AJAX requests redirect back to the newspaper detail
     page and use Django messages to surface errors.
     """
-    newspaper = get_object_or_404(NewsPaper, pk=pk)
 
-    if not request.user.is_authenticated:
-        return redirect(f"{reverse('core:login')}?next={request.path}")
+    def post(self, request: HttpRequest, pk: int):
+        newspaper = get_object_or_404(NewsPaper, pk=pk)
 
-    if (
-        request.user not in newspaper.publishers.all()
-        and not request.user.is_superuser
-    ):
-        return HttpResponseForbidden(
-            "You are not allowed to invite publishers to this newspaper."
-        )
+        if not request.user.is_authenticated:
+            return redirect(f"{reverse('accounts:login')}?next={request.path}")
 
-    if request.method == "POST":
+        if (
+            request.user not in newspaper.publishers.all()
+            and not request.user.is_superuser
+        ):
+            return HttpResponseForbidden(
+                "You are not allowed to invite publishers to this newspaper."
+            )
+
         email = request.POST.get("email", "").strip()
         logger.info(
-            "create_newspaper_invite POST for newspaper %s email=%s AJAX=%s "
-            "user=%s",
+            "create_newspaper_invite POST for newspaper %s email=%s AJAX=%s user=%s",
             newspaper.pk,
             email,
             request.headers.get("x-requested-with"),
@@ -212,56 +158,41 @@ def create_newspaper_invite(request: HttpRequest, pk: int) -> render:
         if email.lower() == request.user.email:
             error = "You can't send and invite to yourself."
             if is_ajax:
-                return JsonResponse(
-                    {"success": False, "error": error},
-                    status=400,
-                )
+                return JsonResponse({"success": False, "error": error}, status=400)
             messages.error(request, error)
             return redirect(
                 reverse("core:newspaper_detail", args=[newspaper.pk])
             )
 
-        if email and not (
-            Publisher.objects.filter(email__iexact=email).exists()
-        ):
+        if email and not (User.objects.filter(email__iexact=email).exists()):
             error = "No registered publisher with that email."
             if is_ajax:
-                return JsonResponse(
-                    {"success": False, "error": error},
-                    status=400,
-                )
+                return JsonResponse({"success": False, "error": error}, status=400)
             messages.error(request, error)
             return redirect(newspaper.get_absolute_url())
 
         with transaction.atomic():
-            n_locked = NewsPaper.objects.select_for_update().get(
-                pk=newspaper.pk
-            )
+            n_locked = NewsPaper.objects.select_for_update().get(pk=newspaper.pk)
 
             if email:
                 if ArticleInvite.objects.filter(
-                    newspaper=n_locked,
-                    email__iexact=email,
-                    used=False,
+                    newspaper=n_locked, email__iexact=email, used=False
                 ).exists():
                     error = "A pending invite for this email already exists."
                     if is_ajax:
                         return JsonResponse(
-                            {"success": False, "error": error},
-                            status=400,
+                            {"success": False, "error": error}, status=400
                         )
                     messages.error(request, error)
                     return redirect(newspaper.get_absolute_url())
             else:
                 if ArticleInvite.objects.filter(newspaper=n_locked).filter(
-                    (Q(email__isnull=True) | Q(email="")),
-                    used=False,
+                    (Q(email__isnull=True) | Q(email="")), used=False
                 ).exists():
                     error = "A generic pending invite for this newspaper already exists."
                     if is_ajax:
                         return JsonResponse(
-                            {"success": False, "error": error},
-                            status=400,
+                            {"success": False, "error": error}, status=400
                         )
                     messages.error(request, error)
                     return redirect(newspaper.get_absolute_url())
@@ -272,10 +203,7 @@ def create_newspaper_invite(request: HttpRequest, pk: int) -> render:
                 email=email,
             )
             invite_url = request.build_absolute_uri(
-                reverse(
-                    "core:accept_newspaper_invite",
-                    args=[str(invite.token)],
-                )
+                reverse("core:accept_newspaper_invite", args=[str(invite.token)])
             )
 
             if email:
@@ -292,9 +220,7 @@ def create_newspaper_invite(request: HttpRequest, pk: int) -> render:
                 invite_url = request.build_absolute_uri(
                     reverse("core:accept_newspaper_invite", args=[str(inv.token)])
                 )
-                pending_info.append(
-                    {"invite": inv, "invite_url": invite_url}
-                )
+                pending_info.append({"invite": inv, "invite_url": invite_url})
             pending_html = render_to_string(
                 "invites/_pending_invites.html",
                 {"pending_invites_info": pending_info},
@@ -319,34 +245,32 @@ def create_newspaper_invite(request: HttpRequest, pk: int) -> render:
             },
         )
 
-    messages.info(
-        request,
-        "Use the inline modal on the newspaper page to create invites.",
-    )
-    return redirect(newspaper.get_absolute_url())
+    def get(self, request: HttpRequest, pk: int):
+        messages.info(
+            request,
+            "Use the inline modal on the newspaper page to create invites.",
+        )
+        newspaper = get_object_or_404(NewsPaper, pk=pk)
+        return redirect(newspaper.get_absolute_url())
 
 
-def accept_newspaper_invite(request: HttpRequest, token: str) -> render:
-    """Accept an invite identified by its token and add the user as a
-    publisher for the newspaper.
-    """
-    invite = get_object_or_404(ArticleInvite, token=token, used=False)
-    if not request.user.is_authenticated:
-        return redirect(f"{reverse('core:login')}?next={request.path}")
+class AcceptNewspaperInviteView(View):
+    def get(self, request: HttpRequest, token: str):
+        invite = get_object_or_404(ArticleInvite, token=token, used=False)
+        if not request.user.is_authenticated:
+            return redirect(f"{reverse('accounts:login')}?next={request.path}")
 
-    if (
-        invite.email and invite.email.lower() != request.user.email.lower()
-    ):
-        return HttpResponseForbidden("This invite is not for your account.")
+        if invite.email and invite.email.lower() != request.user.email.lower():
+            return HttpResponseForbidden("This invite is not for your account.")
 
-    invite.newspaper.publishers.add(request.user)
-    invite.used = True
-    invite.save()
-    return render(
-        request,
-        "invites/newspaper_invite_accepted.html",
-        {"newspaper": invite.newspaper, "user": request.user},
-    )
+        invite.newspaper.publishers.add(request.user)
+        invite.used = True
+        invite.save()
+        return render(
+            request,
+            "invites/newspaper_invite_accepted.html",
+            {"newspaper": invite.newspaper, "user": request.user},
+        )
 
 
 class NewsPaperUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -378,91 +302,43 @@ class NewsPaperDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         )
 
 
-def search_publishers(request: HttpRequest) -> render:
-    """Return a partial HTML list of publishers matching the query.
+class SearchPublishersView(ListView):
+    template_name = "core/partials/_publisher_list.html"
+    context_object_name = "publishers"
 
-    GET param: `q` (search query).
-    """
-    query = request.GET.get("q", "").strip()
-    if query:
-        publishers = Publisher.objects.filter(
-            Q(username__icontains=query)
-            | Q(email__icontains=query)
-            | Q(first_name__icontains=query)
-            | Q(last_name__icontains=query)
-        ).distinct()
-    else:
-        publishers = Publisher.objects.all()
-
-    return render(
-        request,
-        "core/partials/_publisher_list.html",
-        {"publishers": publishers},
-    )
+    def get_queryset(self):
+        query = self.request.GET.get("q", "").strip()
+        if query:
+            return User.objects.filter(
+                Q(username__icontains=query)
+                | Q(email__icontains=query)
+                | Q(first_name__icontains=query)
+                | Q(last_name__icontains=query)
+            ).distinct()
+        return User.objects.all()
 
 
-def search_topics(request: HttpRequest) -> render:
-    """Return a partial HTML list of topics matching the query.
+class SearchTopicsView(ListView):
+    template_name = "core/partials/_topic_list.html"
+    context_object_name = "topics"
 
-    GET param: `q` (search query).
-    """
-    query = request.GET.get("q", "").strip()
-    if query:
-        topics = Topik.objects.filter(name__icontains=query).distinct()
-    else:
-        topics = Topik.objects.all()
-
-    return render(
-        request,
-        "core/partials/_topic_list.html",
-        {"topics": topics},
-    )
+    def get_queryset(self):
+        query = self.request.GET.get("q", "").strip()
+        if query:
+            return Topik.objects.filter(name__icontains=query).distinct()
+        return Topik.objects.all()
 
 
-def search_newspapers(request: HttpRequest) -> render:
-    """Return a partial HTML list of newspapers matching the query.
+class SearchNewspapersView(ListView):
+    template_name = "core/partials/_newspaper_list.html"
+    context_object_name = "newspapers"
 
-    GET param: `q` (search query).
-    """
-    query = request.GET.get("q", "").strip()
-    if query:
-        newspapers = NewsPaper.objects.filter(
-            Q(title__icontains=query)
-            | Q(content__icontains=query)
-            | Q(topic__name__icontains=query)
-        ).distinct()
-    else:
-        newspapers = NewsPaper.objects.all()
-
-    return render(
-        request,
-        "core/partials/_newspaper_list.html",
-        {"newspapers": newspapers},
-    )
-
-
-def register(request: HttpRequest) -> render:
-    """Register a new publisher (no email verification)."""
-    if request.method == "POST":
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Registration successful. You can now log in.")
-            return redirect("core:login")
-    else:
-        form = RegistrationForm()
-    return render(request, "registration/register.html", {"form": form})
-
-
-def logout_view(request: HttpRequest) -> render:
-    """Confirmation (GET) and POST logout view.
-
-    GET: show confirmation page asking the user to confirm logout.
-    POST: perform logout, add a message, and redirect to index.
-    """
-    if request.method == "POST":
-        logout(request)
-        messages.success(request, "You have been logged out.")
-        return redirect("core:index")
-
-    return render(request, "registration/logout_confirm.html")
+    def get_queryset(self):
+        query = self.request.GET.get("q", "").strip()
+        if query:
+            return NewsPaper.objects.filter(
+                Q(title__icontains=query)
+                | Q(content__icontains=query)
+                | Q(topic__name__icontains=query)
+            ).distinct()
+        return NewsPaper.objects.all()

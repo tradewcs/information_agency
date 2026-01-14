@@ -11,6 +11,6 @@
 {% endif %}
 
 {% if publisher.newspapers.exists %}
-  <p><a class="btn btn-outline-secondary" href="{% url 'core:publisher_articles' publisher.pk %}">View articles</a></p>
+  <p><a class="btn btn-outline-secondary" href="{% url 'accounts:publisher_articles' publisher.pk %}">View articles</a></p>
 {% endif %}
 {% endblock %}

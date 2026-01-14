@@ -41,7 +41,7 @@
 <div class="mb-3 text-muted">Published: {{ newspaper.published_date|date:"Y-m-d H:i" }}</div>
 <div>{{ newspaper.content|safe }}</div>
 <p>Topics: {% for t in newspaper.topic.all %}{{ t.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-<p>Publishers: {% for p in newspaper.publishers.all %}<a href="{% url 'core:publisher_detail' p.pk %}">{{ p.username }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+<p>Publishers: {% for p in newspaper.publishers.all %}<a href="{% url 'accounts:publisher_detail' p.pk %}">{{ p.username }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 
 <!-- Invite modal -->
 <div class="modal fade" id="inviteModal-{{ newspaper.pk }}" tabindex="-1" aria-labelledby="inviteModalLabel-{{ newspaper.pk }}" aria-hidden="true">

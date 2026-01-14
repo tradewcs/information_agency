@@ -7,7 +7,7 @@
     <p class="lead">Browse articles, topics and publishers — explore the latest stories.</p>
     <p>
       <a class="btn btn-primary btn-lg" href="{% url 'core:newspapers_list' %}">Browse Newspapers</a>
-      <a class="btn btn-outline-secondary btn-lg" href="{% url 'core:publishers_list' %}">Publishers</a>
+      <a class="btn btn-outline-secondary btn-lg" href="{% url 'accounts:publishers_list' %}">Publishers</a>
     </p>
   </div>
 </div>
@@ -18,7 +18,7 @@
       <div class="card-body">
         <h5 class="card-title">Publishers</h5>
         <p class="card-text display-6">{{ counts.publishers }}</p>
-        <a href="{% url 'core:publishers_list' %}" class="btn btn-sm btn-primary">View</a>
+        <a href="{% url 'accounts:publishers_list' %}" class="btn btn-sm btn-primary">View</a>
       </div>
     </div>
   </div>

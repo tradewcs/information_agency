@@ -1,19 +1,11 @@
 import uuid
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 from django.urls import reverse
-from django.core.validators import MaxValueValidator
 
 
-class Publisher(AbstractUser):
-    password = models.CharField(max_length=128)
-    years_of_experience = models.PositiveIntegerField(
-        default=0,
-        validators=[MaxValueValidator(80)],
-    )
-
-    def __str__(self) -> str:
-        return self.username
+# NOTE: `Publisher` model was moved to the `accounts` app. Refer to the
+# user model via `settings.AUTH_USER_MODEL` to avoid hard imports here.
 
 
 class Topik(models.Model):
@@ -25,7 +17,7 @@ class Topik(models.Model):
 
 class ArticleInvite(models.Model):
     created_by = models.ForeignKey(
-        Publisher,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="created_invites",
     )
@@ -59,7 +51,7 @@ class NewsPaper(models.Model):
         related_name="newspapers"
     )
     publishers = models.ManyToManyField(
-        Publisher,
+        settings.AUTH_USER_MODEL,
         related_name="newspapers"
     )
 

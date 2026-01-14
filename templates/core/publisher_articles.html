@@ -3,7 +3,7 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h1>Articles by {{ publisher.username }}</h1>
-  <a class="btn btn-secondary" href="{% url 'core:publisher_detail' publisher.pk %}">Back to profile</a>
+  <a class="btn btn-secondary" href="{% url 'accounts:publisher_detail' publisher.pk %}">Back to profile</a>
 </div>
 
 <div id="publisher-articles">
