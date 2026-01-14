@@ -1,0 +1,17 @@
+{% if pending_invites_info %}
+  <ul class="list-unstyled" id="pending-invites-list">
+    {% for item in pending_invites_info %}
+      <li class="mb-2">
+        {% if item.invite.email %}
+          <div>Invited: <strong>{{ item.invite.email }}</strong></div>
+        {% else %}
+          <div><strong>Generic invite</strong></div>
+          <div>{% include 'invites/_invite_link.html' with invite_url=item.invite_url %}</div>
+        {% endif %}
+        <div><small class="text-muted">Created {{ item.invite.created|date:'Y-m-d H:i' }}</small></div>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="text-muted">No pending invites.</p>
+{% endif %}

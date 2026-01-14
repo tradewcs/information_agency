@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3>Invite created for <em>{{ newspaper.title }}</em></h3>
+        {% if email %}
+          <p>An invite was created for <strong>{{ email }}</strong></p>
+        {% else %}
+          <p>Generic invite link:</p>
+        {% endif %}
+        <p>Invite link:</p>
+        {% include 'invites/_invite_link.html' %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

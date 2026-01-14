@@ -1,0 +1,8 @@
+@media (min-width: 992px) {
+  .note-editable { min-height: 420px; }
+}
+
+body { background: #f8f9fa; }
+.jumbotron { background: linear-gradient(180deg, #ffffff 0%, #f7f9fb 100%); }
+.card-title { font-weight: 600; }
+.text-truncate { max-width: 100%; }

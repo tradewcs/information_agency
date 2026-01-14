@@ -1,0 +1,9 @@
+{% if topics.exists %}
+<ul class="topic-results">
+  {% for t in topics %}
+  <li class="topic-item">{{ t.name }}</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="no-results">No topics found.</p>
+{% endif %}

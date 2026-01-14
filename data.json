@@ -1,0 +1,222 @@
+[
+  {
+    "model": "core.publisher",
+    "pk": 1,
+    "fields": {
+      "last_login": "2025-12-23T10:43:30.675Z",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-12-23T10:43:09.931Z",
+      "username": "tradewcs",
+      "email": "tradewcs@gmail.com",
+      "password": "pbkdf2_sha256$1200000$u9quP2mfafd1V1vymIR2SX$3ypdx1GsKBP0Zc3bc+bfSU6S8jGq8LT3DLf1GZAOkKU=",
+      "first_name": "Mike",
+      "last_name": "P",
+      "years_of_experience": 2,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "core.publisher",
+    "pk": 2,
+    "fields": {
+      "last_login": "2025-12-22T14:20:15.123Z",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-11-15T09:12:45.678Z",
+      "username": "sarah_journalist",
+      "email": "sarah.chen@news.com",
+      "password": "pbkdf2_sha256$1200000$u9quP2mfafd1V1vymIR2SX$3ypdx1GsKBP0Zc3bc+bfSU6S8jGq8LT3DLf1GZAOkKU=",
+      "first_name": "Sarah",
+      "last_name": "Chen",
+      "years_of_experience": 7,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "core.publisher",
+    "pk": 3,
+    "fields": {
+      "last_login": "2025-12-21T16:45:22.890Z",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-10-05T11:30:15.432Z",
+      "username": "robert_news",
+      "email": "robert.wilson@dailynews.com",
+      "password": "pbkdf2_sha256$1200000$u9quP2mfafd1V1vymIR2SX$3ypdx1GsKBP0Zc3bc+bfSU6S8jGq8LT3DLf1GZAOkKU=",
+      "first_name": "Robert",
+      "last_name": "Wilson",
+      "years_of_experience": 12,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "core.publisher",
+    "pk": 4,
+    "fields": {
+      "last_login": "2025-12-20T08:15:33.567Z",
+      "is_superuser": false,
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2025-09-18T13:45:22.111Z",
+      "username": "editor_admin",
+      "email": "maria.garcia@newsportal.com",
+      "password": "pbkdf2_sha256$1200000$u9quP2mfafd1V1vymIR2SX$3ypdx1GsKBP0Zc3bc+bfSU6S8jGq8LT3DLf1GZAOkKU=",
+      "first_name": "Maria",
+      "last_name": "Garcia",
+      "years_of_experience": 15,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "core.topik",
+    "pk": 1,
+    "fields": {
+      "name": "Politics"
+    }
+  },
+  {
+    "model": "core.topik",
+    "pk": 2,
+    "fields": {
+      "name": "Technology"
+    }
+  },
+  {
+    "model": "core.topik",
+    "pk": 3,
+    "fields": {
+      "name": "Business"
+    }
+  },
+  {
+    "model": "core.topik",
+    "pk": 4,
+    "fields": {
+      "name": "Sports"
+    }
+  },
+  {
+    "model": "core.topik",
+    "pk": 5,
+    "fields": {
+      "name": "Entertainment"
+    }
+  },
+  {
+    "model": "core.topik",
+    "pk": 6,
+    "fields": {
+      "name": "Health"
+    }
+  },
+  {
+    "model": "core.topik",
+    "pk": 7,
+    "fields": {
+      "name": "Science"
+    }
+  },
+  {
+    "model": "core.topik",
+    "pk": 8,
+    "fields": {
+      "name": "Education"
+    }
+  },
+  {
+    "model": "core.newspaper",
+    "pk": 1,
+    "fields": {
+      "title": "Test newspaper",
+      "content": "<p>test body</p>",
+      "published_date": "2025-12-23T10:43:45.232Z",
+      "topic": [1],
+      "publishers": [1]
+    }
+  },
+  {
+    "model": "core.newspaper",
+    "pk": 2,
+    "fields": {
+      "title": "AI Revolution Transforming Healthcare",
+      "content": "<p>The healthcare industry is undergoing a significant transformation with the integration of artificial intelligence. New AI-powered diagnostic tools are helping doctors detect diseases earlier and more accurately than ever before. Recent studies show that AI algorithms can now identify certain types of cancer with 95% accuracy, surpassing human experts in some cases.</p><p>Major hospitals across the country are adopting these technologies, leading to improved patient outcomes and reduced healthcare costs. However, experts warn about the importance of maintaining human oversight and addressing privacy concerns.</p>",
+      "published_date": "2025-12-22T14:30:00.000Z",
+      "topic": [2, 6],
+      "publishers": [2, 3]
+    }
+  },
+  {
+    "model": "core.newspaper",
+    "pk": 3,
+    "fields": {
+      "title": "Global Summit Addresses Climate Change Policies",
+      "content": "<p>World leaders gathered in Geneva for the annual Climate Change Summit, discussing new policies to combat global warming. The summit focused on reducing carbon emissions by 50% within the next decade through international cooperation.</p><p>Several countries announced new commitments to renewable energy investments, while debates continued about the economic impact of these policies on developing nations. Environmental activists praised the progress but emphasized the need for more immediate action.</p>",
+      "published_date": "2025-12-21T09:15:00.000Z",
+      "topic": [1, 7],
+      "publishers": [1, 4]
+    }
+  },
+  {
+    "model": "core.newspaper",
+    "pk": 4,
+    "fields": {
+      "title": "Tech Giants Report Record Quarterly Earnings",
+      "content": "<p>Leading technology companies announced their quarterly earnings, with several reporting unprecedented growth. The surge is attributed to increased demand for cloud services and AI solutions across various industries.</p><p>Market analysts note that while traditional sectors are experiencing slower growth, the technology sector continues to expand at a rapid pace. Investors are optimistic about the continued innovation and market expansion in the coming year.</p>",
+      "published_date": "2025-12-20T16:45:00.000Z",
+      "topic": [2, 3],
+      "publishers": [3]
+    }
+  },
+  {
+    "model": "core.newspaper",
+    "pk": 5,
+    "fields": {
+      "title": "National Team Wins International Championship",
+      "content": "<p>In a stunning victory, our national team secured the international championship title after a dramatic final match. The game went into overtime, with the winning goal scored in the final minutes of extra time.</p><p>Thousands of fans celebrated in the streets as the team returned home with the trophy. This marks the first international championship win for the country in over two decades, sparking nationwide celebrations and renewed interest in the sport.</p>",
+      "published_date": "2025-12-19T20:30:00.000Z",
+      "topic": [4],
+      "publishers": [2, 4]
+    }
+  },
+  {
+    "model": "core.newspaper",
+    "pk": 6,
+    "fields": {
+      "title": "New Study Reveals Benefits of Online Learning",
+      "content": "<p>A comprehensive study conducted by the Education Research Institute shows that students engaged in well-structured online learning programs perform equally well or better than their peers in traditional classroom settings.</p><p>The research, which followed over 10,000 students for three years, found that online learning offers greater flexibility and personalized pacing, leading to improved outcomes in certain subjects. However, the study also emphasized the importance of social interaction for overall development.</p>",
+      "published_date": "2025-12-18T11:00:00.000Z",
+      "topic": [8],
+      "publishers": [1, 2]
+    }
+  },
+  {
+    "model": "core.newspaper",
+    "pk": 7,
+    "fields": {
+      "title": "Film Festival Announces This Year's Winners",
+      "content": "<p>The prestigious International Film Festival concluded yesterday, with several groundbreaking films receiving top honors. The jury praised the diversity and creativity shown by filmmakers from around the world.</p><p>The Grand Prize went to an independent production that explores themes of cultural identity and migration. Industry experts predict that many of the winning films will receive wider distribution and could be contenders in upcoming award seasons.</p>",
+      "published_date": "2025-12-17T19:15:00.000Z",
+      "topic": [5],
+      "publishers": [4]
+    }
+  },
+  {
+    "model": "core.newspaper",
+    "pk": 8,
+    "fields": {
+      "title": "Breakthrough in Renewable Energy Storage",
+      "content": "<p>Scientists at the National Research Laboratory have announced a major breakthrough in energy storage technology. The new battery design promises to store renewable energy more efficiently and at a lower cost than current solutions.</p><p>This development could significantly accelerate the transition to clean energy by solving one of the major challenges of renewable sources - inconsistent energy production. Commercial applications are expected within the next two years.</p>",
+      "published_date": "2025-12-16T13:45:00.000Z",
+      "topic": [2, 7],
+      "publishers": [3, 4]
+    }
+  }
+]

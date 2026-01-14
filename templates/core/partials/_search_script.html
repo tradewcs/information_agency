@@ -1,0 +1,22 @@
+<script>
+(function(){
+  const input = document.getElementById("{{ input_id }}");
+  const results = document.getElementById("{{ results_id }}");
+  if (!input || !results) return;
+
+  let timeout = null;
+  function doSearch() {
+    const q = input.value || "";
+    const url = "{{ search_url }}" + (q ? `?q=${encodeURIComponent(q)}` : "");
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(res => res.text())
+      .then(html => { results.innerHTML = html; })
+      .catch(err => { console.error('Search error', err); });
+  }
+
+  input.addEventListener('input', () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(doSearch, 300);
+  });
+})();
+</script>

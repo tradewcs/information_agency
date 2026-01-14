@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2>Delete Newspaper</h2>
+        <p>Are you sure you want to delete <strong>{{ object.title }}</strong>? This action cannot be undone.</p>
+        <form method="post">
+          {% csrf_token %}
+          <div class="d-flex justify-content-between">
+            <a class="btn btn-outline-secondary" href="{% url 'core:newspaper_detail' object.pk %}">Cancel</a>
+            <button class="btn btn-danger" type="submit">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
