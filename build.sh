@@ -1,4 +1,3 @@
 #!/bin/bash
 
-ls /
-tree / -L 2
+ls /usr
