@@ -1,5 +1,5 @@
 #!/bin/bash
 
-ls /usr
+ls /var
 pip install -r requirements.txt
 python manage.py migrate
