@@ -1,4 +1,4 @@
-# information_agency
+# Information Agency
 
 A Django-based web application for managing and delivering structured information services.
 
